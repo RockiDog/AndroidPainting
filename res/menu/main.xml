@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.rockidog.demo.MainActivity" >
+
+    <item 
+        android:id="@+id/pen"
+        android:showAsAction="never"
+        android:title="@string/pen" />
+    <item
+        android:id="@+id/eraser"
+        android:showAsAction="never"
+        android:title="@string/eraser" />
+
+</menu>

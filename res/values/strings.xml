@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Demo</string>
+    <string name="start_painting">START</string>
+    <string name="pen">Pen</string>
+    <string name="color">Colors</string>
+    <string name="eraser">Eraser</string>
+
+</resources>
