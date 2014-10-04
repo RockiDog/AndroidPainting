@@ -1,5 +1,7 @@
 package com.rockidog.demo;
 
+//import com.rockidog.demo.network.*;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -18,6 +20,8 @@ public class PaintingView extends View {
     private Canvas mCanvas;
     private Path mPath;
     public Paint mPaint;
+    //private String mHost;
+    //private HttpClient mHttpClient;
 
     public PaintingView(Context context) {
         super(context);
@@ -30,6 +34,8 @@ public class PaintingView extends View {
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(6);
+        //mHost = new String("http://10.15.198.102/AndroidServer/index.php");
+        //mHttpClient = new HttpClient(mHost);
     }
 
     @Override
