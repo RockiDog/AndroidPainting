@@ -3,7 +3,6 @@ package com.rockidog.demo.network;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -29,16 +28,18 @@ public class HttpClient extends AsyncTask<Bitmap, Void, Void> {
         try {
             mConnection = (HttpURLConnection) mUrl.openConnection();
             mConnection.setDoOutput(true);
-            transferringEnable = true;
+            mConnection.setChunkedStreamingMode(0);
+            mConnection.setRequestProperty("Content-Type", "image/jpeg");
         }
         catch (IOException e) {
             e.printStackTrace();
         }
+        transferringEnable = true;
     }
 
     private void send(Bitmap bitmap) {
         try {
-            OutputStream outputStream = new BufferedOutputStream(mConnection.getOutputStream());
+            OutputStream outputStream = mConnection.getOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 75, outputStream);
             outputStream.flush();
             outputStream.close();
@@ -48,15 +49,15 @@ public class HttpClient extends AsyncTask<Bitmap, Void, Void> {
         }
         finally {
             mConnection.disconnect();
+            transferringEnable = false;
         }
     }
 
     @Override
     protected Void doInBackground(Bitmap... bitmap) {
+        connect();
         if (true == transferringEnable) {
-            connect();
-            if (0 < bitmap.length)
-                send(bitmap[0]);
+            send(bitmap[0]);
         }
         return null;
     }

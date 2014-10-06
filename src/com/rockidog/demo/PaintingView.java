@@ -1,6 +1,6 @@
 package com.rockidog.demo;
 
-//import com.rockidog.demo.network.*;
+import com.rockidog.demo.network.*;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -20,8 +20,7 @@ public class PaintingView extends View {
     private Canvas mCanvas;
     private Path mPath;
     public Paint mPaint;
-    //private String mHost;
-    //private HttpClient mHttpClient;
+    private String mHost;
 
     public PaintingView(Context context) {
         super(context);
@@ -34,7 +33,7 @@ public class PaintingView extends View {
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(6);
-        //mHost = new String("http://10.15.198.102/AndroidServer/index.php");
+        mHost = new String("http://192.168.1.100/AndroidServer/");
         //mHttpClient = new HttpClient(mHost);
     }
 
@@ -68,6 +67,7 @@ public class PaintingView extends View {
             case MotionEvent.ACTION_UP:
                 touchUp();
                 invalidate();
+                new HttpClient(mHost).execute(mBitmap);
                 break;
             default:
                 break;
