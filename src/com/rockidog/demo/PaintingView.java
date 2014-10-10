@@ -33,7 +33,8 @@ public class PaintingView extends View {
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(6);
-        mHost = new String("http://192.168.1.100/AndroidServer/");
+        //mHost = new String("http://192.168.1.100/AndroidServer/");
+        mHost = new String("http://10.180.39.181/AndroidServer/");
         //mHttpClient = new HttpClient(mHost);
     }
 

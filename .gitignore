@@ -31,3 +31,6 @@ proguard/
 
 # Vim Swap Files
 *.swp
+
+# YCM configuration
+.ycm_extra_conf.customer.py
