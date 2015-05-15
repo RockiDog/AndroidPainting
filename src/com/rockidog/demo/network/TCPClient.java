@@ -97,7 +97,6 @@ public class TCPClient implements Runnable {
             
             dos.writeInt(mData.length);
             dos.write(mData);
-            dos.flush();
           } catch (IOException e) {
             Log.e(TAG, e.getMessage());
           }
