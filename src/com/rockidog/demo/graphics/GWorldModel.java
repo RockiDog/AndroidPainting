@@ -1,0 +1,95 @@
+package com.rockidog.demo.graphics;
+
+import android.util.Log;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
+import java.util.ArrayList;
+
+import javax.microedition.khronos.opengles.GL10;
+
+public class GWorldModel {
+
+  private static final String TAG = "GWorldModel";
+
+  private IntBuffer mVertexBuffer;
+  private IntBuffer mColorBuffer;
+  private ShortBuffer mIndexBuffer;
+
+  private ArrayList<GVertex> mVertexList;
+  private ArrayList<GShape> mShapeList;
+
+  private int mIndexCount = 0;
+
+  public GWorldModel() {
+    mVertexList = new ArrayList<GVertex>();
+    mShapeList = new ArrayList<GShape>();
+  }
+
+  public void setup() {
+    ByteBuffer byteBuffer = ByteBuffer.allocateDirect(mVertexList.size() * 4 * 3);
+    byteBuffer.order(ByteOrder.nativeOrder());
+    mVertexBuffer = byteBuffer.asIntBuffer();
+    
+    byteBuffer = ByteBuffer.allocateDirect(mVertexList.size() * 4 * 4);
+    byteBuffer.order(ByteOrder.nativeOrder());
+    mColorBuffer = byteBuffer.asIntBuffer();
+    
+    Log.i(TAG, Integer.toString(mIndexCount));
+    byteBuffer = ByteBuffer.allocateDirect(mIndexCount * 2);
+    byteBuffer.order(ByteOrder.nativeOrder());
+    mIndexBuffer = byteBuffer.asShortBuffer();
+    
+    for (GVertex vertex : mVertexList)
+      vertex.put(mVertexBuffer, mColorBuffer);
+    for (GShape shape : mShapeList)
+      shape.put(mIndexBuffer);
+  }
+
+  private int flag = 1;
+  public void draw(GL10 gl) {
+    mVertexBuffer.position(0);
+    mColorBuffer.position(0);
+    mIndexBuffer.position(0);
+    
+    if (flag == 1) {
+      for (int i = 0; i < mIndexCount; ++i) {
+        String info = new String();
+        int index = mIndexBuffer.get(i);
+        info += "X " + Integer.toString(mVertexBuffer.get(index * 3)) + " : ";
+        info += "Y " + Integer.toString(mVertexBuffer.get(index * 3 + 1)) + " : ";
+        info += "Z " + Integer.toString(mVertexBuffer.get(index * 3 + 2)) + " : ";
+        Log.i(TAG, info);
+      }
+      for (int i = 0; i < mIndexCount; ++i) {
+        String info = new String();
+        int index = mIndexBuffer.get(i);
+        info += "R " + Integer.toString(mColorBuffer.get(index * 4)) + " : ";
+        info += "G " + Integer.toString(mColorBuffer.get(index * 4 + 1)) + " : ";
+        info += "B " + Integer.toString(mColorBuffer.get(index * 4 + 2)) + " : ";
+        info += "A " + Integer.toString(mColorBuffer.get(index * 4 + 3)) + " : ";
+        Log.i(TAG, info);
+      }
+      flag = 0;
+    }
+    
+    gl.glFrontFace(GL10.GL_CW);
+    gl.glShadeModel(GL10.GL_FLAT);
+    gl.glVertexPointer(3, GL10.GL_FIXED, 0, mVertexBuffer);
+    gl.glColorPointer(4, GL10.GL_FIXED, 0, mColorBuffer);
+    gl.glDrawElements(GL10.GL_TRIANGLES, mIndexCount, GL10.GL_UNSIGNED_SHORT, mIndexBuffer);
+  }
+
+  public void addShape(GShape shape) {
+    mShapeList.add(shape);
+    mIndexCount += shape.getIndexCount();
+  }
+
+  public GVertex addVertex(float x, float y, float z) {
+    GVertex vertex = new GVertex(x, y, z, mVertexList.size());
+    mVertexList.add(vertex);
+    return vertex;
+  }
+}

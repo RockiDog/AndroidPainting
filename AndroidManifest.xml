@@ -27,6 +27,7 @@
         </activity>
         
         <activity android:name=".PaintingActivity" />
+        <activity android:name=".graphics.ShapePreviewerActivity" />
     </application>
 
 </manifest>

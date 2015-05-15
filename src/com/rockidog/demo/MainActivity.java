@@ -1,5 +1,7 @@
 package com.rockidog.demo;
 
+import com.rockidog.demo.graphics.ShapePreviewerActivity;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +16,7 @@ public class MainActivity extends Activity {
   }
 
   public void startPainting(View view) {
-    Intent intent = new Intent(this, PaintingActivity.class);
+    Intent intent = new Intent(this, ShapePreviewerActivity.class);
     startActivity(intent);
   }
 }
