@@ -140,10 +140,9 @@ public class PaintingView extends View {
           }
         } else {
           mButtonPressed = false;
+          touchUp();
         }
-        touchUp();
         invalidate();
-        sendImage();
         break;
       default:
         break;
@@ -172,6 +171,10 @@ public class PaintingView extends View {
     mPath.lineTo(mX, mY);
     mCanvas.drawPath(mPath, mPaint);
     mPath.reset();
+  }
+
+  private void onButtonClicked() {
+    sendImage();
   }
 
   private void sendImage() {
