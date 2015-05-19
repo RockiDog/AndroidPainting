@@ -7,7 +7,7 @@
     <string name="color">Colors</string>
     <string name="eraser">Eraser</string>
 
-    <string name="server_name">10.180.39.73</string>
+    <string name="server_name">10.15.199.147</string>
     <string name="port_number">7001</string>
 
 </resources>

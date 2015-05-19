@@ -3,6 +3,7 @@ package com.rockidog.demo.network;
 import android.content.Context;
 import android.util.Log;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -84,19 +85,26 @@ public class TCPClient implements Runnable {
       Log.e(TAG, e.getMessage());
     }
     while (mThreadStopped == false) {
-      if (mData != null && mSocket.isConnected() == true) {
+      if (mData != null && mSocket != null && mSocket.isConnected() == true) {
         synchronized (this) {
           try {
             DataOutputStream dos = new DataOutputStream(mSocket.getOutputStream());
             
             Log.d(TAG, "****************************************");
-            Log.d(TAG, "size:  " + byteArrayToString(integerToByteArray(mData.length), 0, 4));
-            Log.d(TAG, "size:  " + mData.length);
+            Log.d(TAG, "size: " + byteArrayToString(integerToByteArray(mData.length), 0, 4));
+            Log.d(TAG, "size: " + mData.length);
             Log.d(TAG, "image head: " + byteArrayToString(mData, 0, 4));
             Log.d(TAG, "image tail: " + byteArrayToString(mData, mData.length - 4, mData.length));
             
             dos.writeInt(mData.length);
             dos.write(mData);
+            
+            DataInputStream dis = new DataInputStream(mSocket.getInputStream());
+            int length = dis.readInt();
+            byte[] buffer = new byte[length];
+            dis.read(buffer);
+            String words = new String(buffer);
+            Log.e(TAG, words);
           } catch (IOException e) {
             Log.e(TAG, e.getMessage());
           }

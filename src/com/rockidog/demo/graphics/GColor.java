@@ -1,12 +1,15 @@
 package com.rockidog.demo.graphics;
 
-public class GColor implements Cloneable {
+public class GColor {
 
-  public static final GColor WHITE = new GColor(0x10000, 0x10000, 0x10000);
-  public static final GColor BLACK = new GColor(0, 0, 0);
-  public static final GColor RED = new GColor(0x10000, 0, 0);
-  public static final GColor GREEN = new GColor(0, 0x10000, 0);
-  public static final GColor BLUE = new GColor(0, 0, 0x10000);
+  public static final GColor WHITE       = new GColor(0x10000, 0x10000, 0x10000);
+  public static final GColor BLACK       = new GColor(0, 0, 0);
+  public static final GColor RED         = new GColor(0x10000, 0, 0);
+  public static final GColor GREEN       = new GColor(0, 0x10000, 0);
+  public static final GColor BLUE        = new GColor(0, 0, 0x10000);
+  public static final GColor YELLOW      = new GColor(0x10000, 0x10000, 0);
+  public static final GColor CYAN        = new GColor(0, 0x10000, 0x10000);
+  public static final GColor MAGENTA     = new GColor(0x10000, 0, 0x10000);
   public static final GColor TRANSPARENT = new GColor(0, 0, 0, 0);
 
   public final int R;
@@ -28,8 +31,21 @@ public class GColor implements Cloneable {
     A = 0x10000;
   }
 
+  public GColor(GColor other) {
+    R = other.R;
+    G = other.G;
+    B = other.B;
+    A = other.A;
+  }
+
   @Override
-  public GColor clone() {
-    return new GColor(R, G, B, A);
+  public boolean equals(Object c) {
+    GColor color = (GColor)c;
+    if (this.R == color.R
+        && this.G == color.G
+        && this.B == color.B
+        && this.A == color.A)
+      return true;
+    return false;
   }
 }

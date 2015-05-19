@@ -13,15 +13,14 @@ import javax.microedition.khronos.opengles.GL10;
 public class GWorldModel {
 
   private static final String TAG = "GWorldModel";
+  private int mDebugFlag          = 0;
+  private int mIndexCount         = 0;
 
-  private IntBuffer mVertexBuffer;
-  private IntBuffer mColorBuffer;
-  private ShortBuffer mIndexBuffer;
-
-  private ArrayList<GVertex> mVertexList;
-  private ArrayList<GShape> mShapeList;
-
-  private int mIndexCount = 0;
+  private IntBuffer mVertexBuffer;         // All shared veritces position buffer
+  private IntBuffer mColorBuffer;          // ALl shared vertices color buffer
+  private ShortBuffer mIndexBuffer;        // All vertices
+  private ArrayList<GVertex> mVertexList;  // Store all the shared vertices
+  private ArrayList<GShape> mShapeList;    // Store all the shapes
 
   public GWorldModel() {
     mVertexList = new ArrayList<GVertex>();
@@ -37,7 +36,7 @@ public class GWorldModel {
     byteBuffer.order(ByteOrder.nativeOrder());
     mColorBuffer = byteBuffer.asIntBuffer();
     
-    Log.i(TAG, Integer.toString(mIndexCount));
+    Log.i(TAG, mShapeList.size() + " shapes");
     byteBuffer = ByteBuffer.allocateDirect(mIndexCount * 2);
     byteBuffer.order(ByteOrder.nativeOrder());
     mIndexBuffer = byteBuffer.asShortBuffer();
@@ -48,13 +47,13 @@ public class GWorldModel {
       shape.put(mIndexBuffer);
   }
 
-  private int flag = 1;
   public void draw(GL10 gl) {
     mVertexBuffer.position(0);
     mColorBuffer.position(0);
     mIndexBuffer.position(0);
     
-    if (flag == 1) {
+    /* Output debug message */
+    if (mDebugFlag == 1) {
       for (int i = 0; i < mIndexCount; ++i) {
         String info = new String();
         int index = mIndexBuffer.get(i);
@@ -72,7 +71,7 @@ public class GWorldModel {
         info += "A " + Integer.toString(mColorBuffer.get(index * 4 + 3)) + " : ";
         Log.i(TAG, info);
       }
-      flag = 0;
+      mDebugFlag = 0;
     }
     
     gl.glFrontFace(GL10.GL_CW);
@@ -83,13 +82,19 @@ public class GWorldModel {
   }
 
   public void addShape(GShape shape) {
-    mShapeList.add(shape);
-    mIndexCount += shape.getIndexCount();
+    if (shape != null) {
+      mShapeList.add(shape);
+      mIndexCount += shape.getIndexCount();
+    }
   }
 
   public GVertex addVertex(float x, float y, float z) {
     GVertex vertex = new GVertex(x, y, z, mVertexList.size());
     mVertexList.add(vertex);
     return vertex;
+  }
+
+  public ArrayList<GShape> getShapeList() {
+    return mShapeList;
   }
 }

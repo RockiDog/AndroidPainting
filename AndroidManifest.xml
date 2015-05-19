@@ -5,27 +5,40 @@
     android:versionName="1.0"
     android:installLocation="preferExternal" >
 
-    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19" />
-    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
-    <uses-permission android:name="android.permission.INTERNET" />
+  <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19" />
+  <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+  <uses-permission android:name="android.permission.INTERNET" />
+
+  <application
+      android:allowBackup="true"
+      android:icon="@drawable/ic_launcher"
+      android:label="@string/app_name"
+      android:theme="@style/AppTheme" >
     
-    <application
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-        
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        
-        <activity android:name=".PaintingActivity" />
-        <activity android:name=".graphics.ShapePreviewerActivity" />
-    </application>
+    <activity
+        android:name=".MainActivity"
+        android:label="@string/app_name" >
+      
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+      
+    </activity>
+    
+    <activity android:name=".PaintingActivity" />
+    
+    <activity 
+        android:hardwareAccelerated="true"
+        android:name=".graphics.ShapePreviewerActivity" >
+      <!--
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+      -->
+    </activity>
+    
+  </application>
 
 </manifest>
