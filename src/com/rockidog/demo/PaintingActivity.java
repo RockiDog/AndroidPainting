@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 public class PaintingActivity extends Activity {
+
   private PaintingView paintingView;
 
   @Override

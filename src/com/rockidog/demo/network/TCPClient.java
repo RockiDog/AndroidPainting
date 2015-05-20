@@ -1,25 +1,31 @@
 package com.rockidog.demo.network;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.LinkedHashMap;
 
 public class TCPClient implements Runnable {
+
   private static final String TAG = "AndroidPainting";
   private volatile boolean mThreadStopped = false;
   private int mTimeInterval = 100;
 
   private Context mContext;
   private byte[] mData = null;
+  private LinkedHashMap<Integer, byte[]> mReceivedImages = null;
   private Socket mSocket;
   private Thread mThread;
   private String mURL;
   private int mPort;
+  private boolean mObjectFileTransmitFlag = false;
 
   public TCPClient(Context context, String url, int port) {
     mContext = context;
@@ -47,6 +53,51 @@ public class TCPClient implements Runnable {
   public synchronized void setBytes(byte[] bytes) {
     mData = bytes.clone();
     notify();
+  }
+
+  public synchronized void transmitObjectFile(final int fileId) {
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... params) {
+        try {
+          DataOutputStream dos = new DataOutputStream(mSocket.getOutputStream());
+          dos.writeInt(fileId);
+          DataInputStream dis = new DataInputStream(mSocket.getInputStream());
+          int objSize = dis.readInt();
+          byte[] objBuffer = new byte[objSize];
+          for (int offset = 0; offset < objSize;) {
+            int count = dis.read(objBuffer, offset, objSize - offset);
+            if (count == -1)
+              break;
+            offset += count;
+          }
+          FileOutputStream fis = mContext.openFileOutput(fileId + ".obj", Context.MODE_PRIVATE);
+          fis.write(objBuffer);
+          fis.close();
+          mObjectFileTransmitFlag = true;
+        } catch (IOException e) {
+          Log.e(TAG, e.getMessage());
+        }
+        return null;
+      }
+    }.execute();
+  }
+
+  public synchronized boolean isObjectFileTransmitOK() {
+    if (mObjectFileTransmitFlag == true) {
+      mObjectFileTransmitFlag = false;
+      return true;
+    }
+    return false;
+  }
+
+  public synchronized LinkedHashMap<Integer, byte[]> getImages() {
+    if (mReceivedImages != null) {
+      LinkedHashMap<Integer, byte[]> result = mReceivedImages;
+      mReceivedImages = null;
+      return result;
+    }
+    return null;
   }
 
   private static String byteToHexString(byte b) {
@@ -99,12 +150,33 @@ public class TCPClient implements Runnable {
             dos.writeInt(mData.length);
             dos.write(mData);
             
+            /* 
+             * Receive image stream
+             * Protocol:
+             *  | image_count | img0_id | img0_size | img0_body | img1_size | img1_body | ... |
+             *  |    4-bit    |   4-bit |    4-bit  |   n0-bit  |    4-bit  |   n1-bit  | ... |
+             */
+            mReceivedImages = new LinkedHashMap<Integer, byte[]>();
             DataInputStream dis = new DataInputStream(mSocket.getInputStream());
-            int length = dis.readInt();
-            byte[] buffer = new byte[length];
-            dis.read(buffer);
-            String words = new String(buffer);
-            Log.e(TAG, words);
+            int imageCount = dis.readInt();
+            for (int i = 0; i < imageCount; ++i) {
+              if (dis.available() > 0) {
+                int id = dis.readInt();
+                int size = dis.readInt();
+                Log.w(TAG, "Receiving Image " + id + ": " + size + " bytes");
+                
+                byte[] buffer = new byte[size];
+                for (int offset = 0; offset < size;) {
+                  int count = dis.read(buffer, offset, size - offset);
+                  if (count == -1)
+                    break;
+                  offset += count;
+                }
+                
+                mReceivedImages.put(id, buffer);
+              }
+            }
+            Log.i(TAG, imageCount + " images received");
           } catch (IOException e) {
             Log.e(TAG, e.getMessage());
           }

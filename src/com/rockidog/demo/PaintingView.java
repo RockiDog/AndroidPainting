@@ -1,10 +1,14 @@
 package com.rockidog.demo;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import com.rockidog.demo.network.TCPClient;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BlurMaskFilter;
@@ -17,11 +21,22 @@ import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.os.AsyncTask;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 public class PaintingView extends View {
 
   private static final String TAG = "PaintingView";
+  private static final String EXTRA_IMAGES = "com.rockidog.demo.EXTRA_IMAGES";
+
+  private static TCPClient mTCPClient;
+
   private static final float TOUCH_TOLERANCE = 4;
+  private static final int MAX_TRY_TIMES = 5;
+  private static final long SLEEP_TIME = 500;
 
   /* For button UI */
   private float mButtonR;
@@ -41,8 +56,6 @@ public class PaintingView extends View {
   private Path mPath;
   public Paint mPaint;
 
-  private TCPClient mTCPClient;
-
   public PaintingView(Context context) {
     super(context);
     
@@ -60,8 +73,12 @@ public class PaintingView extends View {
     
     String server = context.getString(R.string.server_name);
     int port = Integer.parseInt(context.getString(R.string.port_number));
-    mTCPClient = new TCPClient(context, server, port);
+    mTCPClient = new TCPClient(getContext(), server, port);
     mTCPClient.connect();
+  }
+
+  public static TCPClient getTCPClient() {
+    return mTCPClient;
   }
 
   @Override
@@ -100,13 +117,22 @@ public class PaintingView extends View {
     /* Blinking */
     if (mButtonClicked == true) {
       try {
-        Thread.sleep(200);
+        Thread.sleep(100);
         canvas.drawColor(Color.LTGRAY, PorterDuff.Mode.DARKEN);
       } catch (InterruptedException e) {
         Log.e(TAG, e.getMessage());
       }
       mButtonClicked = false;
       invalidate();
+      
+      /* Invoke the button clicked callback asynchronously */
+      new AsyncTask<Void, Void, Void>() {
+        @Override
+        protected Void doInBackground(Void... params) {
+          onButtonClicked();
+          return null;
+        }
+      }.execute();
     }
   }
 
@@ -174,12 +200,48 @@ public class PaintingView extends View {
   }
 
   private void onButtonClicked() {
-    sendImage();
-  }
-
-  private void sendImage() {
-    ByteArrayOutputStream os = new ByteArrayOutputStream();
-    mBitmap.compress(CompressFormat.JPEG, 10, os);
-    mTCPClient.setBytes(os.toByteArray());
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    mBitmap.compress(CompressFormat.JPEG, 10, baos);
+    mTCPClient.setBytes(baos.toByteArray());
+    int triedTimes = 0;
+    LinkedHashMap<Integer, byte[]> imageArray = null;
+    while (imageArray == null && triedTimes < MAX_TRY_TIMES) {
+      imageArray = mTCPClient.getImages();
+      ++triedTimes;
+      try {
+        Thread.sleep(SLEEP_TIME);
+      } catch (InterruptedException e) {
+        Log.e(TAG, e.getMessage());
+      }
+    }
+    if (imageArray != null) {
+      Iterator<Integer> it = imageArray.keySet().iterator();
+      ArrayList<String> filenameList = new ArrayList<String>();
+      while (it.hasNext()) {
+        Integer index = (Integer)it.next();
+        String filename = index.toString() + ".jpg";
+        filenameList.add(filename);
+        byte[] bytes = imageArray.get(index);
+        FileOutputStream fos = null;
+        try {
+          fos = getContext().openFileOutput(filename, Context.MODE_PRIVATE);
+          //fos = new FileOutputStream(new File("/sdcard/" + filename));
+          fos.write(bytes);
+          fos.close();
+        } catch (FileNotFoundException e) {
+          Log.e(TAG, e.getMessage());
+        } catch (IOException e) {
+          Log.e(TAG, e.getMessage());
+        }
+      }
+      String[] filenameArray = new String[filenameList.size()];
+      for (int i = 0; i < filenameArray.length; ++i)
+        filenameArray[i] = filenameList.get(i);
+      Intent intent = new Intent(getContext(), ImagePreviewerActivity.class);
+      intent.putExtra(EXTRA_IMAGES, filenameArray);
+      getContext().startActivity(intent);
+    } else {
+      Log.e(TAG, "Network connction lost");
+    }
   }
 }

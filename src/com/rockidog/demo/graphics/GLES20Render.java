@@ -69,7 +69,7 @@ public class GLES20Render implements GLSurfaceView.Renderer {
     mWorld.getShapeList().get(0).init();
     mWorld.getShapeList().get(0).rotatef(mHAngle, Axis.X);
     mWorld.getShapeList().get(0).rotatef(mVAngle, Axis.Y);
-    mWorld.getShapeList().get(0).translatef(0, 0, -5);
+    mWorld.getShapeList().get(0).translatef(0, 0, -10);
     mWorld.draw(gl);
     
     if (mVAngle < 360)
