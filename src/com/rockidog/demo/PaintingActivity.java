@@ -10,12 +10,14 @@ import android.view.MenuItem;
 
 public class PaintingActivity extends Activity {
 
+  private static final String EXTRA_SERVER_NAME = "com.rockidog.demo.EXTRA_SERVER_NAME";
   private PaintingView paintingView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    paintingView = new PaintingView(this);
+    String server = getIntent().getStringExtra(EXTRA_SERVER_NAME);
+    paintingView = new PaintingView(this, server);
     setContentView(paintingView);
   }
 

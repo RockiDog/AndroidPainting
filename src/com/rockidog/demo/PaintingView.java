@@ -31,6 +31,7 @@ public class PaintingView extends View {
 
   private static final String TAG = "PaintingView";
   private static final String EXTRA_IMAGES = "com.rockidog.demo.EXTRA_IMAGES";
+  private static final String EXTRA_SERVER_NAME = "com.rockidog.demo.EXTRA_SERVER_NAME";
 
   private static TCPClient mTCPClient;
 
@@ -56,7 +57,7 @@ public class PaintingView extends View {
   private Path mPath;
   public Paint mPaint;
 
-  public PaintingView(Context context) {
+  public PaintingView(Context context, String server) {
     super(context);
     
     mPath = new Path();
@@ -71,7 +72,6 @@ public class PaintingView extends View {
     
     mButtonPaint.setAntiAlias(true);
     
-    String server = context.getString(R.string.server_name);
     int port = Integer.parseInt(context.getString(R.string.port_number));
     mTCPClient = new TCPClient(getContext(), server, port);
     mTCPClient.connect();

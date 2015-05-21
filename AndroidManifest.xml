@@ -24,13 +24,15 @@
         android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen" >
         
         <activity
-            android:name=".PaintingActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity android:name=".PaintingActivity" />
         <activity android:name=".graphics.ShapePreviewerActivity" />
         
         <activity

@@ -8,14 +8,22 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.rockidog.demo.MainActivity" >
 
-    <Button
-        android:id="@+id/button_start"
+    <EditText
+        android:id="@+id/edit_server"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="@string/start_painting"
-        android:onClick="startPainting" >
-    </Button>
+        android:hint="@string/server_name"
+        android:ems="10" />
+
+    <Button
+        android:id="@+id/button_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edit_server"
+        android:layout_centerHorizontal="true"
+        android:onClick="startPainting"
+        android:text="@string/start_painting" />
 
 </RelativeLayout>
