@@ -55,10 +55,17 @@ public class GLES20Render implements GLSurfaceView.Renderer {
     
     gl.glMatrixMode(GL10.GL_MODELVIEW);
     gl.glLoadIdentity();
-    gl.glTranslatef(0, 0, -3.0f);
+    gl.glTranslatef(0, 0, -10.0f);
     //gl.glRotatef(mVAngle, 0, 1, 0);
     //gl.glRotatef(mHAngle, 1, 0, 0);
-    gl.glScalef(0.3f, 0.3f, 0.3f);
+    float scale = 1;
+    if (GVertex.mMaxX > GVertex.mMaxY && GVertex.mMaxX > GVertex.mMaxZ)
+      scale = 1 / GVertex.mMaxX;
+    else if (GVertex.mMaxY > GVertex.mMaxX && GVertex.mMaxY > GVertex.mMaxZ)
+      scale = 1 / GVertex.mMaxY;
+    else if (GVertex.mMaxZ > GVertex.mMaxX && GVertex.mMaxZ > GVertex.mMaxY)
+      scale = 1 / GVertex.mMaxZ;
+    gl.glScalef(scale, scale, scale);
     
     gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
     gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
@@ -69,7 +76,7 @@ public class GLES20Render implements GLSurfaceView.Renderer {
     mWorld.getShapeList().get(0).init();
     mWorld.getShapeList().get(0).rotatef(mHAngle, Axis.X);
     mWorld.getShapeList().get(0).rotatef(mVAngle, Axis.Y);
-    mWorld.getShapeList().get(0).translatef(0, 0, -10);
+    mWorld.getShapeList().get(0).translatef(0, 0, -5);
     mWorld.draw(gl);
     
     if (mVAngle < 360)

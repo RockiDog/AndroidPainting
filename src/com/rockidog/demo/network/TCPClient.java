@@ -65,6 +65,7 @@ public class TCPClient implements Runnable {
           DataInputStream dis = new DataInputStream(mSocket.getInputStream());
           int objSize = dis.readInt();
           byte[] objBuffer = new byte[objSize];
+          Log.i(TAG, "Tranmitting in background...");
           for (int offset = 0; offset < objSize;) {
             int count = dis.read(objBuffer, offset, objSize - offset);
             if (count == -1)
@@ -74,6 +75,7 @@ public class TCPClient implements Runnable {
           FileOutputStream fis = mContext.openFileOutput(fileId + ".obj", Context.MODE_PRIVATE);
           fis.write(objBuffer);
           fis.close();
+          Log.i(TAG, "Tranmitting in background exits");
           mObjectFileTransmitFlag = true;
         } catch (IOException e) {
           Log.e(TAG, e.getMessage());
@@ -86,6 +88,7 @@ public class TCPClient implements Runnable {
   public synchronized boolean isObjectFileTransmitOK() {
     if (mObjectFileTransmitFlag == true) {
       mObjectFileTransmitFlag = false;
+      Log.i(TAG, "Object transmit OK");
       return true;
     }
     return false;
@@ -160,21 +163,26 @@ public class TCPClient implements Runnable {
             DataInputStream dis = new DataInputStream(mSocket.getInputStream());
             int imageCount = dis.readInt();
             for (int i = 0; i < imageCount; ++i) {
-              if (dis.available() > 0) {
-                int id = dis.readInt();
-                int size = dis.readInt();
-                Log.w(TAG, "Receiving Image " + id + ": " + size + " bytes");
-                
-                byte[] buffer = new byte[size];
-                for (int offset = 0; offset < size;) {
-                  int count = dis.read(buffer, offset, size - offset);
-                  if (count == -1)
-                    break;
-                  offset += count;
+              while (dis.available() <= 0) {
+                try {
+                  Thread.sleep(mTimeInterval);
+                } catch (InterruptedException e) {
+                  Log.e(TAG, e.getMessage());
                 }
-                
-                mReceivedImages.put(id, buffer);
               }
+              int id = dis.readInt();
+              int size = dis.readInt();
+              Log.w(TAG, "Receiving Image " + id + ": " + size + " bytes");
+              
+              byte[] buffer = new byte[size];
+              for (int offset = 0; offset < size;) {
+                int count = dis.read(buffer, offset, size - offset);
+                if (count == -1)
+                  break;
+                offset += count;
+              }
+              
+              mReceivedImages.put(id, buffer);
             }
             Log.i(TAG, imageCount + " images received");
           } catch (IOException e) {

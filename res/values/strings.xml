@@ -6,7 +6,7 @@
     <string name="pen">Pen</string>
     <string name="color">Colors</string>
     <string name="eraser">Eraser</string>
-    <string name="server_name">192.168.43.74</string>
+    <string name="server_name">192.168.1.126</string>
     <string name="port_number">7001</string>
     <string name="title_activity_image_preview">ImagePreviewActivity</string>
 

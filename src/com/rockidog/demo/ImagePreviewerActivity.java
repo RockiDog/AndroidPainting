@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,7 +77,7 @@ public class ImagePreviewerActivity extends Activity {
   private static final String TAG = "ImagePreviewActivity";
   private static final String EXTRA_IMAGES = "com.rockidog.demo.EXTRA_IMAGES";
   private static final String EXTRA_OBJECT_ID = "com.rockidog.demo.EXTRA_OBJECT_ID";
-  private static final int MAX_TRY_TIMES = 5;
+  private static final int MAX_TRY_TIMES = 100;
   private static final long SLEEP_TIME = 50;
 
   private TCPClient mTCPClient;
@@ -97,6 +98,9 @@ public class ImagePreviewerActivity extends Activity {
     final Context context = this;
     if (filenames.length != 0)
       inflateImages(filenames);
+    else
+      Log.w(TAG, "Empty filename array");
+    mImageList.setBackgroundColor(Color.BLACK);
     mImageList.setOnItemClickListener(new OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

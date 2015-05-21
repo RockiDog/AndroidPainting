@@ -25,11 +25,12 @@ public abstract class GShape {
   }
 
   protected GVertex addVertex(float x, float y, float z) {
+    /*
     for (GVertex v : mVertexList) {
       if (v.X == x && v.Y == y && v.Z == z)
         return v;
     }
-    
+    */
     GVertex v = mWolrdContext.addVertex(x, y, z);
     mVertexList.add(v);
     return v;

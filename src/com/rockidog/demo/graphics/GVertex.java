@@ -11,6 +11,7 @@ public class GVertex {
   private static final String TAG = "GVertex";
   private final short mIndex;
 
+  public static float mMaxX, mMaxY, mMaxZ;
   public float mOriginX, mOriginY, mOriginZ;
   public float X, Y, Z;
   private GColor mColor = null;
@@ -21,7 +22,7 @@ public class GVertex {
     mOriginX = X = x;
     mOriginY = Y = y;
     mOriginZ = Z = z;
-    mColor = new GColor(GColor.GREEN);
+    mColor = new GColor(GColor.WHITE);
     mIndex = (short)index;
   }
 
@@ -45,7 +46,6 @@ public class GVertex {
 
   public void setColor(GColor color) {
     if (mColorBuffer != null) {
-      //Log.i(TAG, "update color");
       if (mColor == null) {
         mColorBuffer.put(mIndex * 3, 0);
         mColorBuffer.put(mIndex * 3 + 1, 0);
@@ -69,9 +69,12 @@ public class GVertex {
     mPosBuffer = posBuffer;
     mColorBuffer = colorBuffer;
     
-    posBuffer.put(toFixed(X));
-    posBuffer.put(toFixed(Y));
-    posBuffer.put(toFixed(Z));
+    if (Math.abs(mOriginX) > mMaxX) mMaxX = Math.abs(mOriginX);
+    if (Math.abs(mOriginY) > mMaxY) mMaxY = Math.abs(mOriginY);
+    if (Math.abs(mOriginZ) > mMaxZ) mMaxZ = Math.abs(mOriginZ);
+    posBuffer.put(toFixed(mOriginX));
+    posBuffer.put(toFixed(mOriginY));
+    posBuffer.put(toFixed(mOriginZ));
     if (mColor == null) {
       colorBuffer.put(0);
       colorBuffer.put(0);
