@@ -31,12 +31,24 @@ public class GObject extends GShape {
           y = line.nextFloat();
           z = line.nextFloat();
           addVertex(x, y, z);
+        } else if (head.equals("vn")) {
+          x = line.nextFloat();
+          y = line.nextFloat();
+          z = line.nextFloat();
+          mNormalList.add(new GVector(x, y, z));
         } else if (head.equals("f")) {
           ArrayList<GVertex> vertices = new ArrayList<GVertex>();
           while (line.hasNext()) {
-            int index = Integer.parseInt(line.next().split("/")[0]) - 1;
-            GVertex v = mVertexList.get(index);
-            vertices.add(v);
+            String[] vInfo = line.next().split("/");
+            int cIndex = Integer.parseInt(vInfo[0]) - 1;
+            int nIndex = Integer.parseInt(vInfo[2]) - 1;
+            GVertex vertex = mVertexList.get(cIndex);
+            GVector normal = mNormalList.get(nIndex);
+            if (vertex.getNormal() == null)
+              vertex.setNormal(normal);
+            else
+              vertex.setNormal(vertex.getNormal().add(normal));
+            vertices.add(vertex);
           }
           addFacet(new GFacet((vertices.toArray())));
         }

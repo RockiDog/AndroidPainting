@@ -19,9 +19,14 @@ public class GLES20Render implements GLSurfaceView.Renderer {
   private FloatBuffer mLightPosition = FloatBuffer.wrap(new float[]{0.0f, 5.0f, 5.0f, 1.0f});
   private float[] mBGColor = {0.0f, 0.0f, 0.0f, 1.0f};
   private GWorldModel mWorld;
+  private float mScale = 1;
 
   public GLES20Render(GWorldModel world) {
     mWorld = world;
+  }
+
+  public void scale(float scale) {
+    mScale *= scale;
   }
 
   @Override
@@ -56,8 +61,10 @@ public class GLES20Render implements GLSurfaceView.Renderer {
     gl.glMatrixMode(GL10.GL_MODELVIEW);
     gl.glLoadIdentity();
     gl.glTranslatef(0, 0, -10.0f);
+    gl.glScalef(mScale, mScale, mScale);
     //gl.glRotatef(mVAngle, 0, 1, 0);
     //gl.glRotatef(mHAngle, 1, 0, 0);
+    /*
     float scale = 1;
     if (GVertex.mMaxX > GVertex.mMaxY && GVertex.mMaxX > GVertex.mMaxZ)
       scale = 1 / GVertex.mMaxX;
@@ -66,6 +73,7 @@ public class GLES20Render implements GLSurfaceView.Renderer {
     else if (GVertex.mMaxZ > GVertex.mMaxX && GVertex.mMaxZ > GVertex.mMaxY)
       scale = 1 / GVertex.mMaxZ;
     gl.glScalef(scale, scale, scale);
+    */
     
     gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
     gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
