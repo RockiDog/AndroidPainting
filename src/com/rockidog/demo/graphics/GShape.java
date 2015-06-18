@@ -10,6 +10,7 @@ public abstract class GShape {
   protected GWorldModel mWolrdContext;
   protected ArrayList<GFacet> mFacetList = new ArrayList<GFacet>();
   protected ArrayList<GVertex> mVertexList = new ArrayList<GVertex>();
+  protected ArrayList<GVector> mNormalList = new ArrayList<GVector>();
 
   public GShape(GWorldModel world) {
     mWolrdContext = world;

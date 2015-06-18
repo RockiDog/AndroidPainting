@@ -18,6 +18,7 @@ public class GWorldModel {
 
   private IntBuffer mVertexBuffer;         // All shared veritces position buffer
   private IntBuffer mColorBuffer;          // ALl shared vertices color buffer
+  private IntBuffer mNormalBuffer;         // ALl shared normal buffer
   private ShortBuffer mIndexBuffer;        // All vertices
   private ArrayList<GVertex> mVertexList;  // Store all the shared vertices
   private ArrayList<GShape> mShapeList;    // Store all the shapes
@@ -36,13 +37,17 @@ public class GWorldModel {
     byteBuffer.order(ByteOrder.nativeOrder());
     mColorBuffer = byteBuffer.asIntBuffer();
     
+    byteBuffer = ByteBuffer.allocateDirect(mVertexList.size() * 3 * 4);
+    byteBuffer.order(ByteOrder.nativeOrder());
+    mNormalBuffer = byteBuffer.asIntBuffer();
+    
     Log.i(TAG, mShapeList.size() + " shapes");
     byteBuffer = ByteBuffer.allocateDirect(mIndexCount * 2);
     byteBuffer.order(ByteOrder.nativeOrder());
     mIndexBuffer = byteBuffer.asShortBuffer();
     
     for (GVertex vertex : mVertexList)
-      vertex.put(mVertexBuffer, mColorBuffer);
+      vertex.put(mVertexBuffer, mColorBuffer, mNormalBuffer);
     for (GShape shape : mShapeList)
       shape.put(mIndexBuffer);
   }
@@ -78,6 +83,7 @@ public class GWorldModel {
     gl.glShadeModel(GL10.GL_FLAT);
     gl.glVertexPointer(3, GL10.GL_FIXED, 0, mVertexBuffer);
     gl.glColorPointer(4, GL10.GL_FIXED, 0, mColorBuffer);
+    gl.glNormalPointer(GL10.GL_FIXED, 0, mNormalBuffer);
     gl.glDrawElements(GL10.GL_TRIANGLES, mIndexCount, GL10.GL_UNSIGNED_SHORT, mIndexBuffer);
   }
 

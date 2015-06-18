@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ScaleGestureDetector;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -26,10 +27,27 @@ public class ShapePreviewerActivity extends Activity {
       mObjectFilename = "";
     
     mGLView = new GLSurfaceView(getApplication());
-    Log.e(TAG, "Hardware Acceleration: " + mGLView.isHardwareAccelerated());
     mRender = new GLES20Render(newWorld());
     mGLView.setRenderer(mRender);
     setContentView(mGLView);
+    
+    new ScaleGestureDetector(this, new ScaleGestureDetector.OnScaleGestureListener() {
+          
+          @Override
+          public boolean onScale(ScaleGestureDetector detector) {
+            float scale = detector.getScaleFactor();
+            mRender.scale(scale);
+            return false;
+          }
+          
+          @Override
+          public boolean onScaleBegin(ScaleGestureDetector detector) {
+            return true;
+          }
+          
+          @Override
+          public void onScaleEnd(ScaleGestureDetector detector) {}
+    });
   }
 
   @Override

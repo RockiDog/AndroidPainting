@@ -1,23 +1,43 @@
 package com.rockidog.demo.graphics;
 
+import com.rockidog.demo.graphics.GVertex.Axis;
+
 public class GVector {
 
   private GVertex mStart = null;
   private GVertex mEnd   = null;
-  private float X, Y, Z;
+  public float X, Y, Z;
+  public float mOriginX, mOriginY, mOriginZ;
 
   public GVector(GVertex start, GVertex end) {
     mStart = start;
     mEnd = end;
-    X = mEnd.X - mStart.X;
-    Y = mEnd.Y - mStart.Y;
-    Z = mEnd.Z - mStart.Z;
+    mOriginX = X = mEnd.X - mStart.X;
+    mOriginY = Y = mEnd.Y - mStart.Y;
+    mOriginZ = Z = mEnd.Z - mStart.Z;
   }
 
   public GVector(float x, float y, float z) {
-    X = x;
-    Y = y;
-    Z = z;
+    mOriginX = X = x;
+    mOriginY = Y = y;
+    mOriginZ = Z = z;
+  }
+
+  public GVector(GVector v) {
+    mStart = v.mStart;
+    mEnd = v.mEnd;
+    mOriginX = v.mOriginX;
+    mOriginY = v.mOriginY;
+    mOriginZ = v.mOriginZ;
+    X = v.X;
+    Y = v.Y;
+    Z = v.Z;
+  }
+
+  public void init() {
+    X = mOriginX;
+    Y = mOriginY;
+    Z = mOriginZ;
   }
 
   public float getNorm() {
@@ -49,6 +69,48 @@ public class GVector {
     float y = v.X * Z - X * v.Z;
     float z = X * v.Y - v.X * Y;
     return new GVector(x, y, z);
+  }
+
+  public void rotatef(float angle, Axis axis) {
+    float rad = (float)Math.toRadians(angle);
+    float cos = (float)Math.cos(rad);
+    float sin = (float)Math.sin(rad);
+    float[][] core;
+    switch (axis) {
+      case X:
+        core = new float[][] {
+          {1,   0,    0, 0},
+          {0, cos, -sin, 0},
+          {0, sin,  cos, 0},
+          {0,   0,    0, 1},
+        }; break;
+      case Y:
+        core = new float[][] {
+          {cos, 0, -sin, 0},
+          {  0, 1,    0, 0},
+          {sin, 0,  cos, 0},
+          {  0, 0,    0, 1},
+        }; break;
+      case Z:
+        core = new float[][] {
+          {cos, -sin, 0, 0},
+          {sin,  cos, 0, 0},
+          {  0,    0, 1, 0},
+          {  0,    0, 0, 1},
+        }; break;
+      default:
+        core = new float[][] {
+          {1, 0, 0, 0},
+          {0, 1, 0, 0},
+          {0, 0, 1, 0},
+          {0, 0, 0, 1},
+        }; break;
+    }
+    Matrix4 m4 = new Matrix4(core);
+    float[] result = m4.multiply(new float[]{X, Y, Z, 1});
+    X = result[0] / result[3];
+    Y = result[1] / result[3];
+    Z = result[2] / result[3];
   }
 
   public static float getDotProduct(GVector v1, GVector v2) {
